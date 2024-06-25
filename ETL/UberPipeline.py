@@ -195,3 +195,41 @@ fact = df.join(date_time_dim, df.trip_id == date_time_dim.date_time_id) \
 
 # MAGIC %md
 # MAGIC **LOADING**
+
+# COMMAND ----------
+
+#Mounting Target Blob Container
+try:
+    ## Command to mount source container
+    dbutils.fs.mount(
+        source= "wasbs://transformed-data@uberpipelineproject.blob.core.windows.net",
+        mount_point = "/mnt/transformed-data",
+        extra_configs = {
+            "fs.azure.account.key.uberpipelineproject.blob.core.windows.net":dbutils.secrets.get(scope = "ky-uberpipeline-secretscope-v2", key = "kv-uberpipeline")
+        }
+    )
+except:
+    print("Container already mounted ")
+
+# COMMAND ----------
+
+#Loading all spark data frames to target container
+fact.toPandas().to_csv("/dbfs/mnt/transformed-data/fact.csv",header=False,index=False)
+
+date_time_dim.toPandas().to_csv("/dbfs/mnt/transformed-data/date_time_dim.csv", header=False, index=False)
+
+ratecode_dim.toPandas().to_csv('/dbfs/mnt/transformed-data/ratecode_dim.csv', header=False, index=False)
+
+payment_type_dim.toPandas().to_csv('/dbfs/mnt/transformed-data/payment_type-dim.csv', header=False, index=False)
+
+passenger_count_dim.toPandas().to_csv('/dbfs/mnt/transformed-data/passenger_count_dim.csv', header=False, index=False)
+
+trip_distance_dim.toPandas().to_csv('/dbfs/mnt/transformed-data/trip_distance_dim.csv', header=False, index=False)
+
+pickup_location_dim.toPandas().to_csv('/dbfs/mnt/transformed-data/pickup_location_dim.csv', header=False, index=False)
+
+dropoff_location_dim.toPandas().to_csv('/dbfs/mnt/transformed-data/dropoff_location_dim.csv', header=False, index=False)
+
+# COMMAND ----------
+
+
