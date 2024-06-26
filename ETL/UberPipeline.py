@@ -189,7 +189,7 @@ fact = df.join(date_time_dim, df.trip_id == date_time_dim.date_time_id) \
         .join(pickup_location_dim, df.trip_id == pickup_location_dim.pickup_location_id) \
         .join(dropoff_location_dim, df.trip_id == dropoff_location_dim.dropoff_location_id) \
         .select(factCols)
-
+fact = fact.withColumnRenamed('VendorID', 'vendor_id')
 
 # COMMAND ----------
 
@@ -214,22 +214,24 @@ except:
 # COMMAND ----------
 
 #Loading all spark data frames to target container
-fact.toPandas().to_csv("/dbfs/mnt/transformed-data/fact.csv",header=False,index=False)
+fact.toPandas().to_csv("/dbfs/mnt/transformed-data/fact.csv",header=True,index=False)
 
-date_time_dim.toPandas().to_csv("/dbfs/mnt/transformed-data/date_time_dim.csv", header=False, index=False)
+date_time_dim.toPandas().to_csv("/dbfs/mnt/transformed-data/date_time_dim.csv", header=True, index=False)
 
-ratecode_dim.toPandas().to_csv('/dbfs/mnt/transformed-data/ratecode_dim.csv', header=False, index=False)
+ratecode_dim.toPandas().to_csv('/dbfs/mnt/transformed-data/ratecode_dim.csv', header=True, index=False)
 
-payment_type_dim.toPandas().to_csv('/dbfs/mnt/transformed-data/payment_type-dim.csv', header=False, index=False)
+payment_type_dim.toPandas().to_csv('/dbfs/mnt/transformed-data/payment_type_dim.csv', header=True, index=False)
 
-passenger_count_dim.toPandas().to_csv('/dbfs/mnt/transformed-data/passenger_count_dim.csv', header=False, index=False)
+passenger_count_dim.toPandas().to_csv('/dbfs/mnt/transformed-data/passenger_count_dim.csv', header=True, index=False)
 
-trip_distance_dim.toPandas().to_csv('/dbfs/mnt/transformed-data/trip_distance_dim.csv', header=False, index=False)
+trip_distance_dim.toPandas().to_csv('/dbfs/mnt/transformed-data/trip_distance_dim.csv', header=True, index=False)
 
-pickup_location_dim.toPandas().to_csv('/dbfs/mnt/transformed-data/pickup_location_dim.csv', header=False, index=False)
+pickup_location_dim.toPandas().to_csv('/dbfs/mnt/transformed-data/pickup_location_dim.csv', header=True, index=False)
 
-dropoff_location_dim.toPandas().to_csv('/dbfs/mnt/transformed-data/dropoff_location_dim.csv', header=False, index=False)
+dropoff_location_dim.toPandas().to_csv('/dbfs/mnt/transformed-data/dropoff_location_dim.csv', header=True, index=False)
 
 # COMMAND ----------
 
-
+#Unmounting Containers
+dbutils.fs.unmount('/mnt/transformed-data')
+dbutils.fs.unmount('/mnt/data')
